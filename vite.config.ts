@@ -17,6 +17,9 @@ export default defineConfig({
       '127.0.0.1',
       '5ab9-14-191-68-176.ngrok-free.app',
       '01e5-14-191-68-96.ngrok-free.app',
+      'ships-customermoi.onrender.com',
+      'ships-admin.onrender.com',
+      'ships-backendmoihehe-1.onrender.com'
     ],
   },
   preview: {
