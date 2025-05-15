@@ -2,10 +2,7 @@ services:
   - type: web
     name: ships-frontend
     env: node
-    buildCommand: |
-      rm -rf node_modules package-lock.json
-      npm install
-      npm run build
+    buildCommand: corepack enable && npm install && npm run build
     startCommand: npm run preview
     envVars:
       - key: VITE_API_URL
