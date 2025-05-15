@@ -1,0 +1,50 @@
+{
+  "name": "magic-patterns-vite-template",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "preview": "npx vite preview"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "@headlessui/react": "^2.2.2",
+    "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
+    "emoji-picker-react": "^4.12.2",
+    "lucide-react": "^0.441.0",
+    "qrcode.react": "^4.2.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^5.5.0",
+    "react-modal": "^3.16.3",
+    "react-router-dom": "^6.30.0",
+    "react-toastify": "^11.0.5",
+    "recharts": "^2.7.2",
+    "socket.io-client": "^4.8.1",
+    "sub-vn": "^0.0.2"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.9.36",
+    "@types/leaflet": "^1.9.17",
+    "@types/node": "^20.11.18",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "@types/react-modal": "^3.16.3",
+    "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "latest",
+    "eslint": "^8.50.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.1",
+    "postcss": "latest",
+    "tailwindcss": "3.4.17",
+    "typescript": "^5.5.4",
+    "vite": "^5.2.0"
+  }
+}
