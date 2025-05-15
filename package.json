@@ -27,7 +27,8 @@
     "socket.io-client": "^4.8.1",
     "sub-vn": "^0.0.2",
     "leaflet": "^1.9.4",
-    "jspdf": "^2.5.1"
+    "jspdf": "^2.5.1",
+    "@mapbox/polyline": "^1.1.1"
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",
