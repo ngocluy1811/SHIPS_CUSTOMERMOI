@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     allowedHosts: [
-      '5ab9-14-191-68-176.ngrok-free.app' // Thay bằng domain ngrok hiện tại của bạn
+      '5ab9-14-191-68-176.ngrok-free.app' ,
+      'ships-customermoi.onrender.com'// Thay bằng domain ngrok hiện tại của bạn
     ],
     host: true,
     port: 5173,
