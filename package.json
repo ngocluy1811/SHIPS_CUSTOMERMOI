@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx vite",
-    "build": "npx vite build",
+    "dev": "vite",
+    "build": "vite build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "preview": "npx vite preview"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -45,11 +45,7 @@
     "postcss": "latest",
     "tailwindcss": "3.4.17",
     "typescript": "^5.5.4",
-    "vite": "^5.2.0"
-  },
-  "overrides": {
-    "rollup": {
-      "@rollup/rollup-linux-x64-gnu": "4.9.5"
-    }
+    "vite": "^5.2.0",
+    "rollup": "^4.9.5"
   }
 }
