@@ -25,7 +25,8 @@
     "react-toastify": "^11.0.5",
     "recharts": "^2.7.2",
     "socket.io-client": "^4.8.1",
-    "sub-vn": "^0.0.2"
+    "sub-vn": "^0.0.2",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",
