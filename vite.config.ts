@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_API_URL || 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
@@ -18,5 +18,9 @@ export default defineConfig({
       '5ab9-14-191-68-176.ngrok-free.app',
       '01e5-14-191-68-96.ngrok-free.app',
     ],
+  },
+  preview: {
+    port: 3000,
+    host: true,
   },
 })

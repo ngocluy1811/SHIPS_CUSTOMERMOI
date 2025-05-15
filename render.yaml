@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ships-frontend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run preview
+    envVars:
+      - key: VITE_API_URL
+        value: https://ships-backendmoihehe-1.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html 
