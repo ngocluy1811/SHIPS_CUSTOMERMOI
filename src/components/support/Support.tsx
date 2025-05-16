@@ -155,6 +155,17 @@ interface VietmapGeofencingResponse {
   }>;
 }
 
+// Interface cho response từ Vietmap Autocomplete API
+interface VietmapAutocompleteItem {
+  ref_id: string;
+  address: string;
+  name: string;
+  display: string;
+  boundaries: any[];
+  categories: any[];
+  entry_points: Array<{ lat?: number; lng?: number }>;
+}
+
 const Support = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [modalGuide, setModalGuide] = useState<null | { title: string; detail: string }>(null);
@@ -235,6 +246,12 @@ const Support = () => {
   const [geoError, setGeoError] = useState<string | null>(null);
   const [geoCircle, setGeoCircle] = useState<L.Circle | null>(null);
   const [geoMarkers, setGeoMarkers] = useState<L.Marker[]>([]);
+
+  const [autoText, setAutoText] = useState('');
+  const [autoLoading, setAutoLoading] = useState(false);
+  const [autoResults, setAutoResults] = useState<VietmapAutocompleteItem[]>([]);
+  const [autoMarker, setAutoMarker] = useState<L.Marker | null>(null);
+  const [autoDropdown, setAutoDropdown] = useState(false);
 
   const handleGuideClick = (guide: typeof guides[0]) => {
     if (guide.path && guide.path !== '/support') {
@@ -934,6 +951,87 @@ const Support = () => {
     setGeoLoading(false);
   };
 
+  // Hàm gọi API Autocomplete
+  const handleAutocomplete = async (text: string) => {
+    if (!text.trim()) {
+      setAutoResults([]);
+      setAutoDropdown(false);
+      return;
+    }
+    setAutoLoading(true);
+    setAutoDropdown(true);
+    try {
+      const res = await axios.get<VietmapAutocompleteItem[]>(
+        'https://maps.vietmap.vn/api/autocomplete/v3',
+        {
+          params: {
+            apikey: VIETMAP_TILE_API_KEY,
+            text,
+            focus: customerPos ? `${customerPos.lat},${customerPos.lng}` : undefined
+          }
+        }
+      );
+      setAutoResults(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setAutoResults([]);
+    }
+    setAutoLoading(false);
+  };
+
+  // Hàm chọn gợi ý
+  const handleSelectAuto = async (item: VietmapAutocompleteItem) => {
+    setAutoDropdown(false);
+    const map = mapInstance.current;
+    if (!map) return;
+    let lat: number | undefined, lng: number | undefined;
+    // Nếu có entry_points (có lat/lng)
+    if (item.entry_points && item.entry_points[0] && item.entry_points[0].lat && item.entry_points[0].lng) {
+      lat = item.entry_points[0].lat;
+      lng = item.entry_points[0].lng;
+    } else if (item.ref_id) {
+      // Gọi API Place để lấy lat/lng
+      try {
+        const res = await axios.get('https://maps.vietmap.vn/api/place/v3', {
+          params: {
+            apikey: VIETMAP_TILE_API_KEY,
+            refid: item.ref_id
+          }
+        });
+        if (
+          res.data &&
+          typeof (res.data as any).lat === 'number' &&
+          typeof (res.data as any).lng === 'number'
+        ) {
+          lat = (res.data as any).lat;
+          lng = (res.data as any).lng;
+        }
+      } catch {}
+    }
+    if (lat !== undefined && lng !== undefined) {
+      if (autoMarker) map.removeLayer(autoMarker);
+      const marker = L.marker([lat, lng], { title: item.display })
+        .addTo(map)
+        .bindPopup(`
+          <b>${item.display}</b><br/>${item.address}<br/>
+          <button id='route-to-here-autocomplete' style='margin-top:6px;padding:3px 12px;background:#f97316;color:#fff;border:none;border-radius:4px;cursor:pointer;'>Chỉ đường đến đây</button>
+        `)
+        .openPopup();
+      setAutoMarker(marker);
+      map.setView([lat, lng], 16);
+      // Thêm sự kiện cho nút chỉ đường
+      setTimeout(() => {
+        const btn = document.getElementById('route-to-here-autocomplete');
+        if (btn) {
+          btn.onclick = () => {
+            setSelectedWarehouse(null);
+            setDestination({ lat, lng, name: item.display });
+          };
+        }
+      }, 200);
+    }
+    setAutoText(item.display);
+  };
+
   return <div className="max-w-5xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">Hỗ trợ</h1>
       <div className="grid grid-cols-2 gap-6">
@@ -1062,15 +1160,41 @@ const Support = () => {
             id="vietmap"
             style={{ width: isMapFull ? '90vw' : '100%', height: isMapFull ? '80vh' : '500px', borderRadius: isMapFull ? 12 : undefined, boxShadow: isMapFull ? '0 4px 32px #0002' : undefined, background: undefined, overflow: 'hidden', position: 'relative', zIndex: 10 }}
             className={isMapFull ? 'relative z-[9999]' : ''}
-          ></div>
-          {isMapFull && (
-            <button
-              className="absolute top-4 right-4 px-3 py-1 rounded bg-orange-500 text-white hover:bg-orange-600 text-sm shadow z-[10000]"
-              onClick={() => setIsMapFull(false)}
-            >
-              Đóng bản đồ
-            </button>
-          )}
+          >
+            {/* Autocomplete nổi trên bản đồ */}
+            <div className="absolute top-2 left-4 z-[1001] w-[420px]" style={{pointerEvents: 'auto'}}>
+              <div className="bg-white rounded-full shadow-lg flex items-center px-4 py-2 border border-orange-200">
+                <input
+                  className="flex-1 border-none outline-none bg-transparent text-base px-2"
+                  placeholder="Nhập địa chỉ, tên đường, POI..."
+                  value={autoText}
+                  onChange={e => {
+                    setAutoText(e.target.value);
+                    handleAutocomplete(e.target.value);
+                  }}
+                  onFocus={() => autoText && setAutoDropdown(true)}
+                  autoComplete="off"
+                  style={{minWidth: 0}}
+                />
+              </div>
+              {autoDropdown && (
+                <div className="absolute left-0 mt-2 w-full bg-white border rounded-lg shadow-lg z-50 max-h-72 overflow-auto">
+                  {autoLoading && <div className="p-2 text-gray-500">Đang tìm kiếm...</div>}
+                  {!autoLoading && autoResults.length === 0 && <div className="p-2 text-gray-500">Không có kết quả</div>}
+                  {autoResults.map((item, i) => (
+                    <div
+                      key={i}
+                      className="px-4 py-2 hover:bg-orange-50 cursor-pointer border-b last:border-b-0"
+                      onClick={() => handleSelectAuto(item)}
+                    >
+                      <div className="font-semibold text-orange-600">{item.display}</div>
+                      <div className="text-xs text-gray-500">{item.address}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {routeInfo && (
