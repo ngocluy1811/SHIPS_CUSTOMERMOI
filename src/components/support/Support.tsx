@@ -347,10 +347,10 @@ const Support = () => {
               .bindPopup(place.display || place.name)
               .openPopup();
             setReverseMarker(marker);
-          }
-        } catch (e) {
-          // Có thể hiển thị thông báo lỗi nếu muốn
         }
+      } catch (e) {
+          // Có thể hiển thị thông báo lỗi nếu muốn
+      }
       });
     }
   }, []);
@@ -535,7 +535,7 @@ const Support = () => {
           lat = (res.data as any).lat;
           lng = (res.data as any).lng;
         }
-      } catch (e) {
+            } catch (e) {
         // Không tìm được vị trí
       }
     }
@@ -558,7 +558,7 @@ const Support = () => {
           };
         }
       });
-    } else {
+      } else {
       if (searchMarker) map.removeLayer(searchMarker);
       const center = map.getCenter();
       const marker = L.marker(center, { title: item.name })
@@ -599,7 +599,7 @@ const Support = () => {
           // Thêm nút nếu chưa có
           popup.setContent(content + `<br/><button id='route-to-here' style='margin-top:4px;padding:2px 8px;background:#f97316;color:#fff;border:none;border-radius:4px;cursor:pointer;'>Chỉ đường đến đây</button>`);
         }
-        setTimeout(() => {
+            setTimeout(() => {
           const btn = document.getElementById('route-to-here');
           if (btn) {
             btn.onclick = () => {
@@ -836,7 +836,7 @@ const Support = () => {
         const bounds = L.latLngBounds(paths.flatMap(path => path.getLatLngs() as L.LatLng[]));
         mapInstance.current?.fitBounds(bounds);
       }
-    } catch (e) {
+            } catch (e) {
       setVrpResult(null);
     }
     setVrpLoading(false);
@@ -1161,6 +1161,17 @@ const Support = () => {
             style={{ width: isMapFull ? '90vw' : '100%', height: isMapFull ? '80vh' : '500px', borderRadius: isMapFull ? 12 : undefined, boxShadow: isMapFull ? '0 4px 32px #0002' : undefined, background: undefined, overflow: 'hidden', position: 'relative', zIndex: 10 }}
             className={isMapFull ? 'relative z-[9999]' : ''}
           >
+            {/* Nút đóng fullscreen */}
+            {isMapFull && (
+              <button
+                onClick={() => setIsMapFull(false)}
+                className="fixed top-6 right-10 z-[10010] bg-white border border-orange-400 shadow-lg rounded-full w-12 h-12 flex items-center justify-center text-2xl text-orange-500 hover:bg-orange-100 transition"
+                style={{ boxShadow: '0 2px 12px #0002' }}
+                aria-label="Đóng bản đồ fullscreen"
+              >
+                ×
+              </button>
+            )}
             {/* Autocomplete nổi trên bản đồ */}
             <div className="absolute top-2 left-4 z-[1001] w-[420px]" style={{pointerEvents: 'auto'}}>
               <div className="bg-white rounded-full shadow-lg flex items-center px-4 py-2 border border-orange-200">
