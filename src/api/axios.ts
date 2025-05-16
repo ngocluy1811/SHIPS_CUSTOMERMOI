@@ -2,7 +2,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const instance = axios.create({
-  baseURL: 'https://ships-backendmoihehe-1.onrender.com/api',
+  baseURL: 'https://ships-backendmoi-k6ob.onrender.com',
+  // baseURL: 'http://localhost:3000/api',
   headers: {
     'Content-Type': 'application/json',
   },

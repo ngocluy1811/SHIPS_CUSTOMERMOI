@@ -59,6 +59,8 @@ export function App() {
   // Polling kiểm tra khoá tài khoản
   useEffect(() => {
     const interval = setInterval(async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
       try {
         await axios.get('/users/me');
       } catch (e: any) {

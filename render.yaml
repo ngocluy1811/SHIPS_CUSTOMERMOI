@@ -6,7 +6,7 @@ services:
     startCommand: npm run preview
     envVars:
       - key: VITE_API_URL
-        value: https://ships-backendmoihehe-1.onrender.com
+        value: https://ships-backendmoi-k6ob.onrender.com
     routes:
       - type: rewrite
         source: /*

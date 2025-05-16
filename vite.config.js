@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'https://ships-backendmoihehe-1.onrender.com',
+        target: process.env.VITE_API_URL || 'https://ships-backendmoi-k6ob.onrender.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
@@ -17,7 +17,7 @@ export default defineConfig({
       '5ab9-14-191-68-176.ngrok-free.app' ,
       'ships-customermoi.onrender.com',// Thay bằng domain ngrok hiện tại của bạn
       'ships-admin.onrender.com',
-      'ships-backendmoihehe-1.onrender.com'
+      'ships-backendmoi-k6ob.onrender.com'
     ],
     host: true,
     port: 5173,

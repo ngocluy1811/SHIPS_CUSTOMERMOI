@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'https://ships-backendmoihehe-1.onrender.com',
+        target: process.env.VITE_API_URL || 'https://ships-backendmoi-k6ob.onrender.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
@@ -19,7 +19,7 @@ export default defineConfig({
       '01e5-14-191-68-96.ngrok-free.app',
       'ships-customermoi.onrender.com',
       'ships-admin.onrender.com',
-      'ships-backendmoihehe-1.onrender.com'
+      'ships-backendmoi-k6ob.onrender.com'
     ],
   },
   preview: {

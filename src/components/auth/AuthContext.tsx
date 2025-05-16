@@ -30,24 +30,26 @@ export const AuthProvider = ({
   // Kiểm tra token và lấy user khi load lại trang
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      Promise.resolve(axios.get('/users/me'))
-        .then(res => {
-          setUser(res.data);
-      setIsAuthenticated(true);
-        })
-        .catch(() => {
-          setUser(null);
-          setIsAuthenticated(false);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        })
-        .finally(() => setLoading(false));
-    } else {
+    if (!token) {
       setLoading(false);
+      setIsAuthenticated(false);
+      setUser(null);
+      return;
     }
+    Promise.resolve(axios.get('/users/me'))
+      .then(res => {
+        setUser(res.data);
+        setIsAuthenticated(true);
+      })
+      .catch(() => {
+        setUser(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      })
+      .finally(() => setLoading(false));
   }, []);
-
+  
   const login = async (email: string, password: string) => {
     const res = await axios.post('/users/login', { email, password });
     const data = res.data as any;
