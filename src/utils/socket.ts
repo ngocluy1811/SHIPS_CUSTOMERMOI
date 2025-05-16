@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = 'https://ships-backendmoihehe-1.onrender.com';
+const SOCKET_URL = 'https://ships-backendmoi-k6ob.onrender.com';
 
 // Get token from localStorage
 const token = localStorage.getItem('token');

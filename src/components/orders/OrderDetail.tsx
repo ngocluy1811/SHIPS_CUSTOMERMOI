@@ -358,7 +358,7 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ orderData, forcePrinting }) =
 
   useEffect(() => {
     console.log('Initializing socket connection...');
-    const socket = io('https://ships-backendmoihehe-1.onrender.com', {
+    const socket = io('https://ships-backendmoi-k6ob.onrender.com', {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 5,

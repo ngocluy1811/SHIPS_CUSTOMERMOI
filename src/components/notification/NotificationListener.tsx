@@ -42,7 +42,7 @@ const NotificationListener = () => {
     };
 
     // Sửa URL socket cho production
-    const SOCKET_URL = 'https://ships-backendmoihehe-1.onrender.com';
+    const SOCKET_URL = 'https://ships-backendmoi-k6ob.onrender.com';
     let user_id = getUserId();
     const socket = getGlobalSocket(SOCKET_URL);
 
