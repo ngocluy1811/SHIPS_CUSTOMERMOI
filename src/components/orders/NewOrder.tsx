@@ -678,55 +678,50 @@ const NewOrder = () => {
   };
 
   // Thêm hàm handleCalcDistance
-  const handleCalcDistance = () => {
+  const handleCalcDistance = async () => {
     if (!isFullAddress(senderDetail, senderLocation) || !isFullAddress(receiverDetail, receiverLocation)) {
       toast.error('Vui lòng chọn đầy đủ tỉnh/thành, quận/huyện, xã/phường!');
       return;
     }
-    const senderAddr = buildFullAddress(senderDetail, senderLocation);
-    const receiverAddr = buildFullAddress(receiverDetail, receiverLocation);
     setLoadingDistance(true);
-    fetch('http://127.0.0.1:5001/api/calc-distance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sender: senderAddr, receiver: receiverAddr })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (typeof data.distance_km === 'number') {
-          setDistance(data.distance_km);
-          setIsShippingFeeCalculated(true);
-          setLoadingDistance(false);
-          if (data.fallback) {
-            toast.success('Đã tính khoảng cách (theo đường thẳng, không có đường đi thực tế)!');
-          } else {
-          toast.success('Đã tính thành công khoảng cách!');
-        }
-        } else {
+    try {
+      const res = await axios.post('/vietmap/calc-shipping-fee', {
+        sender: { province: senderLocation.province },
+        receiver: { province: receiverLocation.province }
+      });
+      const data = res.data as { fee?: number; distance_km?: number; error?: string };
+      if (typeof data.fee === 'number' && typeof data.distance_km === 'number') {
+        setDistance(data.distance_km);
+        setIsShippingFeeCalculated(true);
         setLoadingDistance(false);
-          setIsShippingFeeCalculated(false);
-          toast.error(data.error || 'Không thể tính khoảng cách với địa chỉ này!');
-        }
-      })
-      .catch(() => {
+        setPricing(prev => ({
+          ...prev,
+          distanceFee: Number(data.fee ?? 0),
+          // shippingFee giữ nguyên, sẽ được tính realtime ở useEffect bên dưới
+          total: Number(data.fee ?? 0) + prev.shippingFee + prev.packageFee + prev.surcharge + prev.serviceFee - prev.discount
+        }));
+        toast.success('Đã tính phí giao hàng từ backend!');
+      } else {
         setLoadingDistance(false);
         setIsShippingFeeCalculated(false);
-        toast.error('Không thể tính khoảng cách với địa chỉ này!');
-    });
+        toast.error(data.error || 'Không thể tính phí giao hàng với địa chỉ này!');
+      }
+    } catch (err: any) {
+      setLoadingDistance(false);
+      setIsShippingFeeCalculated(false);
+      toast.error(err?.response?.data?.error || 'Không thể tính phí giao hàng với địa chỉ này!');
+    }
   };
 
   useEffect(() => {
     // Phí ship theo khoảng cách (chỉ tính theo km)
-    let distanceFee = 0;
-    if (distance > 0) {
-      distanceFee = Math.round(distance * PER_KM_FEE);
-    }
+    let distanceFee = typeof pricing.distanceFee === 'number' ? pricing.distanceFee : 0;
     // Phí vượt cân (chỉ tính phần vượt 3kg)
     let overweightFee = 0;
     if (weight > 3) {
       overweightFee = Math.round((weight - 3) * OVER_WEIGHT_FEE_PER_KG);
     }
-    // Cước phí giao hàng = phí ship theo khoảng cách + phí vượt cân
+    // Cước phí giao hàng = phí ship theo khoảng cách (backend) + phí vượt cân
     const shippingFee = distanceFee + overweightFee;
     // Phụ thu (cồng kềnh, dễ vỡ)
     const surcharge = fragileFee + bulkyFee;
@@ -745,7 +740,8 @@ const NewOrder = () => {
       : 0;
     // Tổng cuối cùng
     const total = subtotal - discount;
-    setPricing({
+    setPricing(prev => ({
+      ...prev,
       shippingFee: Math.round(shippingFee),
       distanceFee: Math.round(distanceFee),
       overweightFee: Math.round(overweightFee),
@@ -759,8 +755,8 @@ const NewOrder = () => {
       additionalFee: 0,
       platformFee: 0,
       serviceFee: Math.round(serviceFee)
-    });
-  }, [weight, dimensions, serviceType, senderLocation.province, receiverLocation.province, fragileFee, bulkyFee, coupon, distance]);
+    }));
+  }, [weight, dimensions, serviceType, senderLocation.province, receiverLocation.province, fragileFee, bulkyFee, coupon, distance, pricing.distanceFee]);
 
   const [warehouseList, setWarehouseList] = useState<any[]>([]);
   const [orderSuccess, setOrderSuccess] = useState<any>(null);

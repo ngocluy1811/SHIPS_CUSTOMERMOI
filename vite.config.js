@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'https://ships-backendmoi-k6ob.onrender.com',
+        target: process.env.VITE_API_URL || 'https://ships-backendmoi-k6ob.onrender.com'||'http://localhost:3000', 
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
