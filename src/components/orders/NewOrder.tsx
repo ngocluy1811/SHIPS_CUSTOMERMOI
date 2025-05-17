@@ -68,7 +68,7 @@ async function fetchVietMapAutocomplete(text: string, focus?: string): Promise<a
     if (err.response?.status === 429 || err.response?.status === 451) {
       toast.error('Bạn thao tác quá nhanh hoặc vượt giới hạn tra cứu, vui lòng thử lại sau!');
     } else {
-      toast.error('Không thể lấy gợi ý địa chỉ, vui lòng thử lại!');
+      console.warn('Không thể lấy gợi ý địa chỉ, vui lòng thử lại!', err);
     }
     return [];
   }
@@ -635,9 +635,9 @@ const NewOrder = () => {
           resolve(roads);
         } catch (e: any) {
           if (e?.response?.status === 429) {
-            toast.error('Bạn thao tác quá nhanh hoặc đã vượt giới hạn tra cứu tên đường. Vui lòng thử lại sau!');
+            console.warn('Bạn thao tác quá nhanh hoặc đã vượt giới hạn tra cứu tên đường. Vui lòng thử lại sau!', e);
           } else {
-            toast.error('Không thể lấy tên đường từ Overpass API!');
+            console.warn('Không thể lấy tên đường từ Overpass API!', e);
           }
           resolve([]);
         }
@@ -958,25 +958,23 @@ const NewOrder = () => {
         <p className="text-gray-500">Điền thông tin chi tiết để tạo đơn hàng</p>
       </div>
       <div className="space-y-6">
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <div className="grid grid-cols-2 gap-8">
+        <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
             <div className="space-y-4">
-              <h3 className="font-medium flex items-center gap-2 text-lg">
-                <Package2Icon className="h-5 w-5 text-orange-500" />
-                Thông tin người gửi
-                <button type="button" onClick={fillSenderDefault} className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-600 rounded">Lấy địa chỉ mặc định</button>
-              </h3>
-              <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium flex items-center gap-2 text-base md:text-lg">
+                  <Package2Icon className="h-5 w-5 text-orange-500" />
+                  Thông tin người gửi
+                </h3>
+                <button type="button" onClick={fillSenderDefault} className="px-2 py-1 text-xs bg-orange-100 text-orange-600 rounded ml-2">Lấy địa chỉ mặc định</button>
+              </div>
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Họ tên người gửi
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Họ tên người gửi</label>
                   <input type="text" value={senderDetail.name} onChange={e => setSenderDetail(d => ({...d, name: e.target.value}))} placeholder="Họ tên người gửi" className="w-full p-2 border rounded-lg" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Số điện thoại
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
                   <input type="tel" value={senderDetail.phone} onChange={e => setSenderDetail(d => ({...d, phone: e.target.value}))} placeholder="Số điện thoại" className="w-full p-2 border rounded-lg" />
                 </div>
                 <div className="space-y-3">
@@ -984,7 +982,6 @@ const NewOrder = () => {
                     <option value="">Chọn tỉnh/thành phố</option>
                     {getProvinces().map((p: any) => <option key={p.code} value={p.code}>{p.name}</option>)}
                   </select>
-                  {/* Dropdown chọn kho hàng theo tỉnh, hiển thị thêm địa chỉ và số lượng trống */}
                   <select value={warehouseId} onChange={e => setWarehouseId(e.target.value)} className="w-full p-2 border rounded-lg mt-2">
                     <option value="">Chọn kho hàng</option>
                     {warehouseList.filter(w => {
@@ -1011,56 +1008,54 @@ const NewOrder = () => {
                     {getWardsByDistrictCode(senderLocation.district).map((w: any) => <option key={w.code} value={w.code}>{w.name}</option>)}
                   </select>
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tên đường (autocomplete)</label>
-                      <input
-                        type="text"
-                        value={senderStreetInput}
-                        onChange={e => {
-                          setSenderStreetInput(e.target.value);
-                          setSenderDetail(d => ({ ...d, street: e.target.value }));
-                        }}
-                        className="w-full p-2 border rounded-lg"
-                        placeholder="Nhập địa chỉ, tên đường..."
-                        autoComplete="off"
-                      />
-                      {senderStreetSuggestions.length > 0 && (
-                        <ul className="border bg-white rounded shadow max-h-40 overflow-y-auto">
-                          {senderStreetSuggestions.map((suggestion, idx) => (
-                            <li
-                              key={idx}
-                              className="px-3 py-1 hover:bg-orange-100 cursor-pointer"
-                              onClick={() => {
-                                setSenderStreetInput(suggestion);
-                                setSenderDetail(d => ({ ...d, street: suggestion }));
-                                setSenderStreetSuggestions([]);
-                              }}
-                            >
-                              {suggestion}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tên đường (autocomplete)</label>
+                    <input
+                      type="text"
+                      value={senderStreetInput}
+                      onChange={e => {
+                        setSenderStreetInput(e.target.value);
+                        setSenderDetail(d => ({ ...d, street: e.target.value }));
+                      }}
+                      className="w-full p-2 border rounded-lg"
+                      placeholder="Nhập địa chỉ, tên đường..."
+                      autoComplete="off"
+                    />
+                    {senderStreetSuggestions.length > 0 && (
+                      <ul className="border bg-white rounded shadow max-h-40 overflow-y-auto">
+                        {senderStreetSuggestions.map((suggestion, idx) => (
+                          <li
+                            key={idx}
+                            className="px-3 py-1 hover:bg-orange-100 cursor-pointer"
+                            onClick={() => {
+                              setSenderStreetInput(suggestion);
+                              setSenderDetail(d => ({ ...d, street: suggestion }));
+                              setSenderStreetSuggestions([]);
+                            }}
+                          >
+                            {suggestion}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
             <div className="space-y-4">
-              <h3 className="font-medium flex items-center gap-2 text-lg">
-                <TruckIcon className="h-5 w-5 text-orange-500" />
-                Thông tin người nhận
-                <button type="button" onClick={fillReceiverDefault} className="ml-2 px-2 py-1 text-xs bg-orange-100 text-orange-600 rounded">Lấy địa chỉ mặc định</button>
-              </h3>
-              <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium flex items-center gap-2 text-base md:text-lg">
+                  <TruckIcon className="h-5 w-5 text-orange-500" />
+                  Thông tin người nhận
+                </h3>
+                <button type="button" onClick={fillReceiverDefault} className="px-2 py-1 text-xs bg-orange-100 text-orange-600 rounded ml-2">Lấy địa chỉ mặc định</button>
+              </div>
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Họ tên người nhận
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Họ tên người nhận</label>
                   <input type="text" value={receiverDetail.name} onChange={e => setReceiverDetail(d => ({...d, name: e.target.value}))} placeholder="Họ tên người nhận" className="w-full p-2 border rounded-lg" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Số điện thoại
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
                   <input type="tel" value={receiverDetail.phone} onChange={e => setReceiverDetail(d => ({...d, phone: e.target.value}))} placeholder="Số điện thoại" className="w-full p-2 border rounded-lg" />
                 </div>
                 <div className="space-y-3">
@@ -1077,35 +1072,35 @@ const NewOrder = () => {
                     {getWardsByDistrictCode(receiverLocation.district).map((w: any) => <option key={w.code} value={w.code}>{w.name}</option>)}
                   </select>
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Tên đường (autocomplete)</label>
-                      <input
-                        type="text"
-                        value={receiverStreetInput}
-                        onChange={e => {
-                          setReceiverStreetInput(e.target.value);
-                          setReceiverDetail(d => ({ ...d, street: e.target.value }));
-                        }}
-                        className="w-full p-2 border rounded-lg"
-                        placeholder="Nhập địa chỉ, tên đường..."
-                        autoComplete="off"
-                      />
-                      {receiverStreetSuggestions.length > 0 && (
-                        <ul className="border bg-white rounded shadow max-h-40 overflow-y-auto">
-                          {receiverStreetSuggestions.map((suggestion, idx) => (
-                            <li
-                              key={idx}
-                              className="px-3 py-1 hover:bg-orange-100 cursor-pointer"
-                              onClick={() => {
-                                setReceiverStreetInput(suggestion);
-                                setReceiverDetail(d => ({ ...d, street: suggestion }));
-                                setReceiverStreetSuggestions([]);
-                              }}
-                            >
-                              {suggestion}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tên đường (autocomplete)</label>
+                    <input
+                      type="text"
+                      value={receiverStreetInput}
+                      onChange={e => {
+                        setReceiverStreetInput(e.target.value);
+                        setReceiverDetail(d => ({ ...d, street: e.target.value }));
+                      }}
+                      className="w-full p-2 border rounded-lg"
+                      placeholder="Nhập địa chỉ, tên đường..."
+                      autoComplete="off"
+                    />
+                    {receiverStreetSuggestions.length > 0 && (
+                      <ul className="border bg-white rounded shadow max-h-40 overflow-y-auto">
+                        {receiverStreetSuggestions.map((suggestion, idx) => (
+                          <li
+                            key={idx}
+                            className="px-3 py-1 hover:bg-orange-100 cursor-pointer"
+                            onClick={() => {
+                              setReceiverStreetInput(suggestion);
+                              setReceiverDetail(d => ({ ...d, street: suggestion }));
+                              setReceiverStreetSuggestions([]);
+                            }}
+                          >
+                            {suggestion}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1195,17 +1190,17 @@ const NewOrder = () => {
                   Kích thước (DxRxC cm)
                 </label>
                 <div className="grid grid-cols-3 gap-2">
-                  <input type="number" value={isNaN(dimensions.length) ? '' : dimensions.length} onChange={e => setDimensions(prev => ({
+                  <input type="number" value={dimensions.length === 0 ? '' : dimensions.length} onChange={e => setDimensions(prev => ({
                   ...prev,
-                  length: parseFloat(e.target.value) || 0
+                  length: e.target.value === '' ? 0 : Number(e.target.value)
                 }))} placeholder="Dài" className="p-2 border rounded" />
-                  <input type="number" value={isNaN(dimensions.width) ? '' : dimensions.width} onChange={e => setDimensions(prev => ({
+                  <input type="number" value={dimensions.width === 0 ? '' : dimensions.width} onChange={e => setDimensions(prev => ({
                   ...prev,
-                  width: parseFloat(e.target.value) || 0
+                  width: e.target.value === '' ? 0 : Number(e.target.value)
                 }))} placeholder="Rộng" className="p-2 border rounded" />
-                  <input type="number" value={isNaN(dimensions.height) ? '' : dimensions.height} onChange={e => setDimensions(prev => ({
+                  <input type="number" value={dimensions.height === 0 ? '' : dimensions.height} onChange={e => setDimensions(prev => ({
                   ...prev,
-                  height: parseFloat(e.target.value) || 0
+                  height: e.target.value === '' ? 0 : Number(e.target.value)
                 }))} placeholder="Cao" className="p-2 border rounded" />
                 </div>
               </div>
@@ -1213,7 +1208,7 @@ const NewOrder = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Trọng lượng (kg)
                 </label>
-                <input type="number" value={isNaN(weight) ? '' : weight} onChange={e => setWeight(parseFloat(e.target.value) || 0)} className="p-2 border rounded w-full" />
+                <input type="number" value={weight === 0 ? '' : weight} onChange={e => setWeight(e.target.value === '' ? 0 : Number(e.target.value))} className="p-2 border rounded w-full" />
               </div>
             </div>
           </div>
@@ -1237,7 +1232,7 @@ const NewOrder = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Thời gian nhận hàng dự kiến
+                  Thời gian lấy hàng dự kiến
                 </label>
                 <div className="flex items-center gap-2">
                   <ClockIcon className="h-5 w-5 text-gray-400" />
@@ -1275,8 +1270,8 @@ const NewOrder = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mã giảm giá</label>
-                <div className="flex gap-2">
-                  <select value={selectedUserCouponId} onChange={e => setSelectedUserCouponId(e.target.value)} className="flex-1 p-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500" disabled={!!coupon.applied}>
+                <div className="flex flex-col md:flex-row gap-2">
+                  <select value={selectedUserCouponId} onChange={e => setSelectedUserCouponId(e.target.value)} className="flex-1 w-full p-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500" disabled={!!coupon.applied}>
                     <option value="">Chọn mã giảm giá</option>
                     {userCoupons.map(uc => (
                       <option key={uc.usercoupon_id} value={uc.usercoupon_id}>
@@ -1284,10 +1279,16 @@ const NewOrder = () => {
                       </option>
                     ))}
                   </select>
-                  {!coupon.applied && selectedUserCouponId && <button type="button" onClick={() => handleApplyCoupon()} className="px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600">Áp dụng</button>}
-                  {coupon.applied && <button type="button" onClick={handleRemoveCoupon} className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 flex items-center gap-2">
-                    <XIcon className="h-4 w-4" /> Hủy
-                    </button>}
+                  <div className="flex gap-2 mt-2 md:mt-0 w-full md:w-auto">
+                    {!coupon.applied && selectedUserCouponId && (
+                      <button type="button" onClick={() => handleApplyCoupon()} className="w-full md:w-auto px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600">Áp dụng</button>
+                    )}
+                    {coupon.applied && (
+                      <button type="button" onClick={handleRemoveCoupon} className="w-full md:w-auto px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 flex items-center gap-2">
+                        <XIcon className="h-4 w-4" /> Hủy
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
