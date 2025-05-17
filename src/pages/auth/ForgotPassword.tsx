@@ -44,7 +44,7 @@ const ForgotPassword = () => {
     <div className="min-h-screen bg-orange-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
         <div className="text-center mb-8">
-          <img src="https://ship.com.vn/images/logo.png" alt="Logo" className="h-12 mx-auto mb-4" />
+          <img src="/logo.png" alt="Logo" className="h-12 mx-auto mb-4" />
           <h2 className="text-2xl font-bold">Quên mật khẩu</h2>
           <p className="text-gray-600">Nhập email của bạn để nhận mật khẩu mới</p>
         </div>
