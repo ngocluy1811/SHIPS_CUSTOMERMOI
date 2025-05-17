@@ -33,7 +33,7 @@ const Sidebar = () => {
   }];
   return <div className="w-64 bg-[#D97706] text-white min-h-screen">
       <button className="block p-4 w-full text-left" onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')}>
-        <img src="/logo-shipvn.png" alt="Logo" className="h-12" />
+        <img src="/logo.png" alt="Logo" className="h-12" />
       </button>
       <nav className="mt-6">
         <Link to="/orders/new" className="block px-4 py-2 bg-orange-600 hover:bg-orange-700">

@@ -56,7 +56,7 @@ const Header = ({ notifications, unreadCount, fetchNotifications }: { notificati
   return <header className="bg-white shadow-sm px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center max-w-2xl flex-1">
-          <img src="/logo-shipvn.png" alt="Logo" className="h-10 w-10 rounded-full border border-orange-200 shadow-sm mr-4 bg-white" />
+          <img src="/logo.png" alt="Logo" className="h-10 w-10 rounded-full border border-orange-200 shadow-sm mr-4 bg-white" />
           <div className="relative flex-1">
             <OrderSearchBox
               onSelect={(orderId: string) => navigate(`/orders/${orderId}`)}
