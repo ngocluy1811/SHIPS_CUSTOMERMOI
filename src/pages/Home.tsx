@@ -8,7 +8,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center">
-              <img src="https://ship.com.vn/images/logo.png" alt="Logo" className="h-8" />
+              <img src="/logo.png" alt="Logo" className="h-8" />
             </div>
             <div className="flex items-center space-x-4">
               <Link to="/login" className="text-gray-600 hover:text-orange-500 px-3 py-2">
@@ -76,7 +76,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-4 gap-8">
             <div>
-              <img src="https://ship.com.vn/images/logo.png" alt="Logo" className="h-8 mb-4" />
+              <img src="/logo.png" alt="Logo" className="h-8 mb-4" />
               <p className="text-gray-600">
                 Giải pháp vận chuyển thông minh cho doanh nghiệp của bạn
               </p>
